@@ -18,12 +18,17 @@ import java.awt.Font;
 import java.util.List;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class StudentDetails extends JFrame {
 
 	private JPanel contentPane;
 	private JTable table;
 	StudentServices studentServices = new StudentServicesImpl();
+	private JTextField searchTextField;
 
 	/**
 	 * Launch the application.
@@ -90,9 +95,42 @@ public class StudentDetails extends JFrame {
 		btnDelete.setFont(new Font("Times New Roman", Font.PLAIN, 20));
 		btnDelete.setBounds(462, 559, 119, 42);
 		contentPane.add(btnDelete);
+		
+		JLabel lblSearch = new JLabel("Search");
+		lblSearch.setFont(new Font("Times New Roman", Font.PLAIN, 24));
+		lblSearch.setBounds(446, 21, 78, 29);
+		contentPane.add(lblSearch);
+		
+		searchTextField = new JTextField();
+		searchTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+			String searchName = searchTextField.getText();
+			if(searchName == null || searchName.isEmpty()) {
+				loadValueInTable();
+			}
+			else {
+				searchValueInTable(searchName);
+			}
+			}
+		});
+		searchTextField.setFont(new Font("Times New Roman", Font.PLAIN, 24));
+		searchTextField.setBounds(552, 21, 156, 28);
+		contentPane.add(searchTextField);
+		searchTextField.setColumns(10);
 	}
 	public void loadValueInTable() {
 		List<Student> studentList= studentServices.getStudent();
+		
+		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+		tableModel.setRowCount(0);
+		
+		for(Student student: studentList) {
+			tableModel.addRow(new Object[] {student.getId(),student.getName(),student.getAddress(),student.getContact(),student.getGender(),student.getFaculty(),student.getSubject()});
+		}
+	}
+	public void searchValueInTable(String name) {
+		List<Student> studentList= studentServices.searchForStudentByString(name);
 		
 		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 		tableModel.setRowCount(0);

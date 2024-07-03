@@ -56,4 +56,32 @@ public class StudentServicesImpl implements StudentServices{
 		
 	}
 
+	@Override
+	public List<Student> searchForStudentByString(String name) {
+		// TODO Auto-generated method stub
+		List<Student> studentList = new ArrayList<>();
+		try {
+			String sql = "Select * from student where name like ?";
+			ps= DatabaseConnection.getConnection().prepareStatement(sql);
+			ps.setString(1, "%"+name+"%");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {				
+			Student student = new Student();
+			student.setId(rs.getInt("id"));
+			student.setName(rs.getString("name"));
+			student.setAddress(rs.getString("address"));
+			student.setGender(rs.getString("gender"));
+			student.setContact(rs.getLong("contact"));
+			student.setFaculty(rs.getString("faculty"));
+			student.setSubject(rs.getString("subject"));
+			studentList.add(student);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
+		return studentList;
+		
+	}
+
 }
